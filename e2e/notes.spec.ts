@@ -52,6 +52,17 @@ test("an existing note shows formatted, with its image and no image path", async
   expect(read(dir, "plan de estudio.md")).toBe(fs.readFileSync(path.join(FIXTURES, "plan de estudio.md"), "utf8"));
 });
 
+test("opening a note that ends in a list keeps the app on screen and ready to type", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await startApp(page);
+  await openFromSidebar(page, "ideas de proyectos");
+  await expect(editor(page).locator("h1")).toHaveText("ideas de proyectos");
+  await expect(editor(page)).toBeFocused();
+  await expect(page.getByRole("complementary", { name: "Notas" })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test("opening and switching notes never rewrites them", async ({ page }) => {
   const dir = await startApp(page);
   const files = fs.readdirSync(FIXTURES).filter((f) => f.endsWith(".md"));
