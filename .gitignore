@@ -1,0 +1,11 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+e2e/.artifacts/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+# Local design history; it quotes real notes, so it never goes public.
+docs/proposals/
