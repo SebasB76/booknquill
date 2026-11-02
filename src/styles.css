@@ -118,3 +118,5 @@ button { font: inherit; color: inherit; }
 .note-image__sep { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
 .note-image__crop { position: absolute; inset: 0; cursor: crosshair; border-radius: 8px; overflow: hidden; }
 .note-image__crop-rect { position: absolute; border: 1.5px dashed #fff; box-shadow: 0 0 0 9999px #000a; }
+.editor-error { color: var(--muted); }
+.editor-error .row { width: auto; display: inline-flex; border: 1px solid var(--border); margin-top: 8px; }

@@ -1,7 +1,8 @@
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
-import { NoteEditor, insertImage } from "./editor/NoteEditor";
+import { NoteEditor, focusEditor, insertImage } from "./editor/NoteEditor";
+import { EditorBoundary } from "./editor/EditorBoundary";
 import { setImageRoot } from "./editor/NoteImage";
 import { api, onNewNote, onNotesChanged, type NoteInfo } from "./lib/backend";
 import { titleOf, wordCount } from "./lib/markdown";
@@ -97,7 +98,10 @@ export function App() {
 
   const newNote = useCallback(() => {
     const active = tabsRef.current.find((t) => t.id === activeRef.current);
-    if (active && !active.file && !active.draft.trim()) return editors.current.get(active.id)?.commands.focus();
+    if (active && !active.file && !active.draft.trim()) {
+      const editor = editors.current.get(active.id);
+      return editor && focusEditor(editor);
+    }
     const tab = newTab();
     setTabs((ts) => [...ts, tab]);
     setActiveId(tab.id);
@@ -279,14 +283,15 @@ export function App() {
 
         <div className="scroll">
           {tabs.map((t) => (
-            <NoteEditor
-              key={t.id}
-              markdown={t.markdown}
-              version={t.version}
-              active={t.id === activeId}
-              onChange={(md) => onChange(t.id, md)}
-              onReady={(ed) => editors.current.set(t.id, ed)}
-            />
+            <EditorBoundary key={t.id} active={t.id === activeId}>
+              <NoteEditor
+                markdown={t.markdown}
+                version={t.version}
+                active={t.id === activeId}
+                onChange={(md) => onChange(t.id, md)}
+                onReady={(ed) => editors.current.set(t.id, ed)}
+              />
+            </EditorBoundary>
           ))}
         </div>
 

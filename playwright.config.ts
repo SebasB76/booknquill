@@ -14,6 +14,8 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${UI_PORT}`,
     channel: "chrome",
+    // The real app runs in WebKitGTK, and Tiptap takes Safari-only code paths for this user agent.
+    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/60.5 Safari/605.1.15",
     viewport: { width: 1280, height: 860 },
     screenshot: "only-on-failure",
   },

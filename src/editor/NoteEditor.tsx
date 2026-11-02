@@ -68,7 +68,7 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
   useEffect(() => {
     if (editor && active) {
       onReady?.(editor);
-      if (!editor.isFocused) editor.commands.focus(editor.isEmpty ? "start" : undefined);
+      focusEditor(editor);
     }
   }, [editor, active, onReady]);
 
@@ -77,16 +77,24 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
     <div className="doc" hidden={!active}>
       <EditorContent editor={editor} />
       <BubbleMenu editor={editor} shouldShow={({ editor, state }) => !state.selection.empty && !editor.isActive("noteImage")} className="bubble">
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleBold().run()}><b>B</b></button>
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleItalic().run()}><i>I</i></button>
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>H1</button>
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleBulletList().run()}>• Lista</button>
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleTaskList().run()}>☐ Tarea</button>
-        <button onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleCode().run()}>{"</>"}</button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleBold().run())}><b>B</b></button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleItalic().run())}><i>I</i></button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleHeading({ level: 1 }).run())}>H1</button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleHeading({ level: 2 }).run())}>H2</button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleBulletList().run())}>• Lista</button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleTaskList().run())}>☐ Tarea</button>
+        <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleCode().run())}>{"</>"}</button>
       </BubbleMenu>
     </div>
   );
+}
+
+/**
+ * Tiptap's focus command treats WebKitGTK as Safari and focuses synchronously; the focus
+ * transaction can then change the document under the pending one and crash the editor.
+ */
+export function focusEditor(editor: Editor) {
+  if (!editor.isDestroyed && !editor.view.hasFocus()) editor.view.focus();
 }
 
 function imageFiles(list?: FileList | null): File[] {
@@ -103,9 +111,9 @@ export async function insertImage(pos: number, file: File, editor: Editor | null
   });
   const src = await api.saveImage(base64, ext);
   const natural = await naturalWidth(file);
+  focusEditor(editor);
   editor
     .chain()
-    .focus()
     .insertContentAt(pos, { type: "noteImage", attrs: { src, align: "center", width: Math.min(480, natural) } })
     .run();
 }
