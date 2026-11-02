@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=BookNQuill
+GenericName=Notes
+Comment=A quiet notes app
+Exec=booknquill
+Icon=booknquill
+Terminal=false
+Categories=Office;TextEditor;
+Keywords=notes;markdown;write;
+StartupWMClass=booknquill
+Actions=new-note;
+
+[Desktop Action new-note]
+Name=Nueva nota
+Exec=booknquill --new
