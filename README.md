@@ -11,6 +11,35 @@ A quiet desktop notes app. Open it, start writing, and find the note again in yo
 
 Built with Tauri 2 (Rust core), React and Tiptap.
 
+## Install (Linux)
+
+```sh
+./scripts/install-local.sh
+```
+
+It builds a release binary and installs it to `~/.local/bin/booknquill` with a desktop entry.
+`booknquill --new` opens a fresh note; if the app is already running, it opens the note there.
+On Hyprland, bind it to a key:
+
+```ini
+bind = SUPER, N, exec, booknquill --new
+```
+
+Notes go to `~/Notes`. Set `BOOKNQUILL_NOTES_DIR` to use another folder.
+
+## Development
+
+Needs Node 22+, pnpm and Rust (with `cargo install tauri-cli`).
+
+```sh
+pnpm install
+pnpm tauri dev      # the app, with hot reload
+pnpm e2e            # end-to-end tests
+```
+
+The E2E tests drive the real UI in Chrome against the real Rust core: the `e2e_bridge` binary serves the
+same `Notes::dispatch` the app uses over HTTP, and each test gets a fresh copy of `e2e/fixtures/notes`.
+
 ## Status
 
 Early development. Linux (Wayland, Hyprland) is the first target.
