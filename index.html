@@ -7,6 +7,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Duotone for the Cianotipo theme: dark tones to Prussian blue, light tones to the paper white. WebKit only resolves same-document filters. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="cyanotype-print" color-interpolation-filters="sRGB">
+        <feColorMatrix type="saturate" values="0" />
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.055 0.902" />
+          <feFuncG type="table" tableValues="0.227 0.941" />
+          <feFuncB type="table" tableValues="0.388 0.980" />
+        </feComponentTransfer>
+      </filter>
+    </svg>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
