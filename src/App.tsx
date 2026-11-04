@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
+import { ThemePicker } from "./components/ThemePicker";
 import { NoteEditor, focusEditor, insertImage } from "./editor/NoteEditor";
 import { EditorBoundary } from "./editor/EditorBoundary";
 import { setImageRoot } from "./editor/NoteImage";
@@ -267,6 +268,7 @@ export function App() {
           <button className="ibtn" title="Mover a la papelera" data-testid="trash-note" disabled={!active.file} onClick={trashActive}>
             <Icon name="trash" />
           </button>
+          <ThemePicker />
           <input
             ref={fileInput}
             type="file"
