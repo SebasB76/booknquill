@@ -8,6 +8,7 @@ A quiet desktop notes app. Open it, start writing, and find the note again in yo
 - **Writes like a word processor.** `# Title` turns into a heading as you type; lists, tasks, bold and code work the same way.
 - **Images without paths.** Paste a screenshot, then resize, align, rotate, crop or drag it. The file keeps a normal Markdown link, with the width stored the Obsidian way (`![|480](images/pasted-….png)`).
 - **Five themes.** Negro, Tokyo Night, Pergamino (serif on paper), Fósforo (amber CRT) and Cianotipo (blueprint). Pick one from the palette button in the top bar.
+- **Zoom.** `Ctrl +` and `Ctrl -` (or `Ctrl` + mouse wheel) scale the whole window, `Ctrl 0` resets it. The level is remembered.
 - **Sorts itself.** An optional classifier ([jev](https://typesafe.ai)) files each note under a category. Without an API key you pick the category yourself.
 
 ![The four new themes: Tokyo Night, Pergamino, Fósforo and Cianotipo](docs/screenshots/themes.jpg)

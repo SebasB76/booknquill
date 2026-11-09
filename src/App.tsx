@@ -7,6 +7,7 @@ import { EditorBoundary } from "./editor/EditorBoundary";
 import { setImageRoot } from "./editor/NoteImage";
 import { api, onNewNote, onNotesChanged, type NoteInfo } from "./lib/backend";
 import { titleOf, wordCount } from "./lib/markdown";
+import { applyZoom, savedZoom, stepZoom } from "./lib/zoom";
 
 type Tab = {
   id: string;
@@ -33,6 +34,7 @@ export function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [notesDir, setNotesDir] = useState("");
   const [now, setNow] = useState(Date.now());
+  const [zoom, setZoom] = useState(savedZoom);
 
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
@@ -152,6 +154,15 @@ export function App() {
     refresh();
   };
 
+  const zoomRef = useRef(zoom);
+  const zoomTo = useCallback((next: (z: number) => number) => {
+    const z = next(zoomRef.current);
+    if (z !== zoomRef.current) applyZoom(z);
+    zoomRef.current = z;
+    setZoom(z);
+    setToast(`Zoom ${Math.round(z * 100)} %`);
+  }, []);
+
   const cycleTab = (step: number) => {
     const ts = tabsRef.current;
     const i = ts.findIndex((t) => t.id === activeRef.current);
@@ -192,10 +203,22 @@ export function App() {
       else if (key === "w") (handled(), closeTab(activeRef.current));
       else if (key === "\\") (handled(), setSidebarOpen((o) => !o));
       else if (key === "tab") (handled(), cycleTab(e.shiftKey ? -1 : 1));
+      else if (key === "=" || key === "+") (handled(), zoomTo((z) => stepZoom(z, 1)));
+      else if (key === "-") (handled(), zoomTo((z) => stepZoom(z, -1)));
+      else if (key === "0") (handled(), zoomTo(() => 1));
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || !e.deltaY) return;
+      e.preventDefault();
+      zoomTo((z) => stepZoom(z, e.deltaY < 0 ? 1 : -1));
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [newNote, closeTab]);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("wheel", onWheel);
+    };
+  }, [newNote, closeTab, zoomTo]);
 
   useEffect(() => {
     if (!toast) return;
@@ -301,6 +324,11 @@ export function App() {
           <div className="composer">
             <span className="meta">{active.file ? `${notesDir}/${active.file}` : "Nota nueva"}</span>
             <span className="grow" />
+            {zoom !== 1 && (
+              <button className="zoom-chip" title="Restablecer zoom (Ctrl + 0)" data-testid="zoom-reset" onClick={() => zoomTo(() => 1)}>
+                {Math.round(zoom * 100)} %
+              </button>
+            )}
             <span className="meta">{wordCount(active.draft)} palabras</span>
             <span className="meta" data-testid="save-state">· {active.saving || active.draft !== active.saved ? "Guardando…" : active.file ? "Guardado" : "Sin guardar"}</span>
           </div>
