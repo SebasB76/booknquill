@@ -6,6 +6,7 @@ import { Placeholder } from "@tiptap/extensions";
 import { useEffect, useRef } from "react";
 import { api } from "../lib/backend";
 import { docToMarkdown, markdownToHtml } from "../lib/markdown";
+import { MathNode, convertSelection } from "./MathNode";
 import { NoteImage } from "./NoteImage";
 
 type Props = {
@@ -20,6 +21,8 @@ type Props = {
 export function NoteEditor({ markdown, version, active, onChange, onReady }: Props) {
   const changeRef = useRef(onChange);
   changeRef.current = onChange;
+  const readyRef = useRef(onReady);
+  readyRef.current = onReady;
 
   const editor = useEditor({
     extensions: [
@@ -29,8 +32,9 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
         nested: true,
         a11y: { checkboxLabel: (node, checked) => `${checked ? "Marcar como pendiente" : "Marcar como hecha"}: ${node.textContent}` },
       }),
-      Placeholder.configure({ placeholder: "Escribe… prueba # título, - lista, [] tarea, **negrita**, o pega una imagen." }),
+      Placeholder.configure({ placeholder: "Escribe… prueba # título, - lista, [] tarea, **negrita**, $ para una fórmula, o pega una imagen." }),
       NoteImage,
+      MathNode,
     ],
     content: markdownToHtml(markdown),
     editorProps: {
@@ -65,18 +69,20 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
     editor.chain().setMeta("external", true).setContent(markdownToHtml(markdown), { emitUpdate: false }).run();
   }, [editor, markdown, version]);
 
+  // Only on tab switch: the parent passes a new onReady every render, and refocusing then would pull
+  // the caret out of a formula box on each autosave.
   useEffect(() => {
     if (editor && active) {
-      onReady?.(editor);
+      readyRef.current?.(editor);
       focusEditor(editor);
     }
-  }, [editor, active, onReady]);
+  }, [editor, active]);
 
   if (!editor) return null;
   return (
     <div className="doc" hidden={!active}>
       <EditorContent editor={editor} />
-      <BubbleMenu editor={editor} shouldShow={({ editor, state }) => !state.selection.empty && !editor.isActive("noteImage")} className="bubble">
+      <BubbleMenu editor={editor} shouldShow={({ editor, state }) => !state.selection.empty && !editor.isActive("noteImage") && !editor.isActive("math")} className="bubble">
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleBold().run())}><b>B</b></button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleItalic().run())}><i>I</i></button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleHeading({ level: 1 }).run())}>H1</button>
@@ -84,6 +90,9 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleBulletList().run())}>• Lista</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleTaskList().run())}>☐ Tarea</button>
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleCode().run())}>{"</>"}</button>
+        <button onMouseDown={(e) => e.preventDefault()} title="Convertir el texto en fórmula con IA (Ctrl + M)" data-testid="to-formula" onClick={() => convertSelection(editor)}>
+          ∑ Fórmula
+        </button>
       </BubbleMenu>
     </div>
   );

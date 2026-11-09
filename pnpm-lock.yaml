@@ -8,12 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@cortex-js/compute-engine':
+        specifier: ^0.183.0
+        version: 0.183.0
       '@floating-ui/dom':
         specifier: ^1.8.0
         version: 1.8.0
       '@tauri-apps/api':
         specifier: ^2.12.4
         version: 2.12.4
+      '@tiptap/core':
+        specifier: 3.32.2
+        version: 3.32.2(@tiptap/pm@3.32.2)
       '@tiptap/extension-list':
         specifier: ^3.32.2
         version: 3.32.2(@tiptap/core@3.32.2(@tiptap/pm@3.32.2))(@tiptap/pm@3.32.2)
@@ -29,9 +35,15 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.32.2
         version: 3.32.2
+      katex:
+        specifier: ^0.19.1
+        version: 0.19.1
       markdown-it:
         specifier: ^15.0.3
         version: 15.0.3
+      mathlive:
+        specifier: ^0.111.4
+        version: 0.111.4
       react:
         specifier: ^19.3.1
         version: 19.3.1
@@ -45,6 +57,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(@types/node@26.6.6)(jiti@2.7.0))
+      '@types/katex':
+        specifier: ^0.16.8
+        version: 0.16.8
       '@types/markdown-it':
         specifier: ^14.2.0
         version: 14.2.0
@@ -71,6 +86,14 @@ importers:
         version: 8.3.5(@types/node@26.6.6)(jiti@2.7.0)
 
 packages:
+
+  '@arnog/colors@0.7.3':
+    resolution: {integrity: sha512-D7h3f498cu68+pI54eNl1UIm5xbs1uX5ggBTuFpLs3YQ17lqlWAmJ6d+tuvyLvJEzciN2YYR6D+9K8NfBGJGkQ==}
+
+  '@cortex-js/compute-engine@0.183.0':
+    resolution: {integrity: sha512-NN1/0E1u8qkyUmxQkGc1j+jT3YbhgoVXz8YvmrmvH4BqDEk9skV8VDW2V2wWYB1LieKFAZKQL6cp7Pxh9qIicg==}
+    engines: {node: '>=26.13.0', npm: '>=10.5.0'}
+    hasBin: true
 
   '@floating-ui/core@1.8.0':
     resolution: {integrity: sha512-0CIZ5itps/8x7BG8dEIhs53BvCUH2PCoogtakwRTut+Arm58sJooJ0AuZhLw2HJYIR5cMLNPBSS728sPho2khQ==}
@@ -451,6 +474,9 @@ packages:
   '@tiptap/starter-kit@3.32.2':
     resolution: {integrity: sha512-6K+oOMF4orhnOxivgUTKiSpNAEftHyWOcfFIvIEMUP044b34obBUogzMTfM3RjtewZtQXVafO9zmGU30IllC1g==}
 
+  '@types/katex@0.16.8':
+    resolution: {integrity: sha512-trgaNyfU+Xh2Tc+ABIb44a5AYUpicB3uwirOioeOkNPPbmgRNtcWyDeeFRzjPZENO9Vq8gvVqfhaaXWLlevVwg==}
+
   '@types/linkify-it@5.0.0':
     resolution: {integrity: sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q==}
 
@@ -613,6 +639,13 @@ packages:
   argparse@3.0.4:
     resolution: {integrity: sha512-fwWK3Zq22l4XJJjx5mcBHGikIk+hJqO+32dPm0Jur7+rtG5x1scOjSfdT9ZKeWHPpsya/l0HHK4tDImBkTrtvA==}
 
+  commander@15.1.0:
+    resolution: {integrity: sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ==}
+    engines: {node: '>=22.12.0'}
+
+  complex.js@2.4.3:
+    resolution: {integrity: sha512-UrQVSUur14tNX6tiP4y8T4w4FeJAX3bi2cIv0pu/DTLFNxoq7z2Yh83Vfzztj6Px3X/lubqQ9IrPp7Bpn6p4MQ==}
+
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
@@ -651,6 +684,10 @@ packages:
 
   jiti@2.7.0:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
+    hasBin: true
+
+  katex@0.19.1:
+    resolution: {integrity: sha512-jG8uKntjSEcm2EpQOh0XturpPuuC9r3Sq5HLHdsFdWZT27E672SF19QEi+of0/YeOy15lDgRhKvr5614uRrEfA==}
     hasBin: true
 
   lightningcss-android-arm64@1.32.0:
@@ -813,6 +850,9 @@ packages:
   markdown-it@15.0.3:
     resolution: {integrity: sha512-+Az7Ojz3iRGu8KYMvJ6xVhvrxP3eE+vEtJX75Ow88XBpcQNV/0lGX5ZynIIBftREo4DC2jsveAMDaeltmm8QvQ==}
     hasBin: true
+
+  mathlive@0.111.4:
+    resolution: {integrity: sha512-1E5EOQnUHWn+KfEXaDTmuyxRWZrZw4WlQFyZLzJmjKEPdaX4WAnFqVfZb36mhulykcIl7/W7gKkTmutP2/9wjQ==}
 
   mdurl@2.1.0:
     resolution: {integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==}
@@ -987,6 +1027,13 @@ packages:
     resolution: {integrity: sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==}
 
 snapshots:
+
+  '@arnog/colors@0.7.3': {}
+
+  '@cortex-js/compute-engine@0.183.0':
+    dependencies:
+      '@arnog/colors': 0.7.3
+      complex.js: 2.4.3
 
   '@floating-ui/core@1.8.0':
     dependencies:
@@ -1314,6 +1361,8 @@ snapshots:
       '@tiptap/extensions': 3.32.2(@tiptap/core@3.32.2(@tiptap/pm@3.32.2))(@tiptap/pm@3.32.2)
       '@tiptap/pm': 3.32.2
 
+  '@types/katex@0.16.8': {}
+
   '@types/linkify-it@5.0.0': {}
 
   '@types/markdown-it@14.2.0':
@@ -1404,6 +1453,10 @@ snapshots:
 
   argparse@3.0.4: {}
 
+  commander@15.1.0: {}
+
+  complex.js@2.4.3: {}
+
   csstype@3.2.3: {}
 
   detect-libc@2.1.2: {}
@@ -1427,6 +1480,10 @@ snapshots:
   graceful-fs@4.2.11: {}
 
   jiti@2.7.0: {}
+
+  katex@0.19.1:
+    dependencies:
+      commander: 15.1.0
 
   lightningcss-android-arm64@1.32.0:
     optional: true
@@ -1544,6 +1601,8 @@ snapshots:
       mdurl: 2.1.0
       punycode.js: 2.3.1
       uc.micro: 3.0.0
+
+  mathlive@0.111.4: {}
 
   mdurl@2.1.0: {}
 

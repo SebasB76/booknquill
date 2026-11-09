@@ -268,3 +268,39 @@ button { font: inherit; color: inherit; }
 :root[data-theme="cyanotype"] ::selection { background: #ffffff38; }
 /* Shown as a cyanotype print; the file on disk keeps its colors. */
 :root[data-theme="cyanotype"] .note-image img { filter: url(#cyanotype-print); }
+
+/* Formulas: KaTeX when shown, a MathLive box while typing. */
+.ibtn--text { font-size: 16px; }
+.math-node { display: inline-block; vertical-align: middle; border-radius: 4px; cursor: pointer; padding: 0 2px; }
+.math-node.is-display { display: block; text-align: center; margin: 6px 0; }
+.math-node.is-selected, .math-node:not(.is-editing):hover { background: var(--hover); outline: 1px solid var(--border); }
+.math-node .katex { font-size: 1.12em; color: var(--fg); }
+.math-node .katex-display { margin: 0; }
+.math-box { display: inline-flex; align-items: center; gap: 4px; background: var(--card); border: 1px solid var(--primary); border-radius: 6px; padding: 2px 4px; }
+.math-node.is-display .math-box { display: flex; }
+math-field {
+  min-width: 48px; font-size: 1.12em; background: transparent; color: var(--fg); border: 0; outline: none; padding: 2px 4px;
+  --caret-color: var(--primary); --selection-background-color: var(--selected); --contains-highlight-background-color: var(--hover);
+  --placeholder-color: var(--muted);
+}
+math-field.is-display { flex: 1; text-align: center; }
+math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) { display: none; }
+.ML__keyboard {
+  --keyboard-background: var(--sidebar); --keyboard-border: var(--border); --keyboard-toolbar-text: var(--muted);
+  --keyboard-toolbar-text-active: var(--primary); --keyboard-toolbar-background-hover: var(--hover);
+  --keycap-background: var(--card); --keycap-background-hover: var(--selected); --keycap-text: var(--fg);
+  --keycap-secondary-background: var(--selected); --keycap-secondary-text: var(--fg); --keycap-border: var(--border);
+  --keycap-border-bottom: var(--border);
+}
+.math-tools { display: inline-flex; gap: 2px; }
+.math-tools button { all: unset; cursor: pointer; min-width: 22px; height: 22px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--muted); font-size: 13px; }
+.math-tools button:hover { background: var(--hover); color: var(--fg); }
+
+/* Export to PDF: only the note, on white, without the app around it. */
+@media print {
+  :root { --fg: #000; --h1: #000; --h2: #000; --h3: #000; --strong: #000; --muted: #444; --bg: #fff; color-scheme: light; }
+  html, body, #root, .app, .main, .scroll { height: auto !important; overflow: visible !important; background: #fff !important; }
+  .sidebar, .topbar, .composer-wrap, .toast, .bubble { display: none !important; }
+  .doc[hidden] { display: none !important; }
+  .math-node.is-selected, .math-node:hover { background: none; outline: none; }
+}

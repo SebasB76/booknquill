@@ -28,7 +28,14 @@ export const api = {
   trash: (file: string) => call<null>("trash", { file }),
   saveImage: (base64: string, ext: string) => call<string>("saveImage", { base64, ext }),
   readImage: (path: string) => call<string>("readImage", { path }),
+  mathFromText: (text: string) => call<string>("mathFromText", { text }),
 };
+
+/** Opens the print dialog; "Print to file" there saves the note as PDF. */
+export function printNote(): void {
+  if (BRIDGE) window.print();
+  else invoke("print").catch(() => window.print());
+}
 
 export function onNotesChanged(cb: (files: string[]) => void): () => void {
   if (BRIDGE) {

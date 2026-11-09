@@ -1,3 +1,4 @@
+pub mod ai;
 pub mod core;
 
 use crate::core::{default_notes_dir, Notes};
@@ -8,9 +9,16 @@ struct AppState {
     notes: Notes,
 }
 
+// Async so a slow command (the formula request to Claude) runs off the UI thread.
 #[tauri::command]
-fn core(state: tauri::State<AppState>, cmd: String, args: Value) -> Result<Value, String> {
+async fn core(state: tauri::State<'_, AppState>, cmd: String, args: Value) -> Result<Value, String> {
     state.notes.dispatch(&cmd, args)
+}
+
+/// Opens the system print dialog, where "Print to file" saves the note as PDF.
+#[tauri::command]
+fn print(window: tauri::WebviewWindow) -> Result<(), String> {
+    window.print().map_err(|e| e.to_string())
 }
 
 pub fn run() {
@@ -42,7 +50,7 @@ pub fn run() {
             app.manage(AppState { notes });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![core])
+        .invoke_handler(tauri::generate_handler![core, print])
         .run(tauri::generate_context!())
         .expect("error while running BookNQuill");
 }
