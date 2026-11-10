@@ -61,6 +61,25 @@ const PATHS = {
       <path d="M18 22V8a2 2 0 0 0-2-2H2" />
     </>
   ),
+  pen: (
+    <>
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+      <path d="m14.5 5.5 3 3" />
+    </>
+  ),
+  marker: (
+    <>
+      <path d="m9 15 6-6 3 3-6 6H9Z" />
+      <path d="m15 9 3-3 3 3-3 3M9 15l-3 3h4" />
+      <path d="M3 21h18" />
+    </>
+  ),
+  eraser: (
+    <>
+      <path d="m7 21-4-4a1.5 1.5 0 0 1 0-2.1L13.9 4a1.5 1.5 0 0 1 2.1 0l4 4a1.5 1.5 0 0 1 0 2.1L9.1 21" />
+      <path d="M7 21h14M9 10l5 5" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

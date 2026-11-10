@@ -6,6 +6,7 @@ import { Placeholder } from "@tiptap/extensions";
 import { useEffect, useRef } from "react";
 import { api } from "../lib/backend";
 import { docToMarkdown, markdownToHtml } from "../lib/markdown";
+import { Ink, InkKeys, startDrawing, type InkTool } from "./Ink";
 import { MathNode, convertSelection } from "./MathNode";
 import { NoteImage } from "./NoteImage";
 
@@ -14,11 +15,13 @@ type Props = {
   markdown: string;
   version: number;
   active: boolean;
+  /** The drawing tool while draw mode is on. */
+  ink: InkTool | null;
   onChange: (markdown: string) => void;
   onReady?: (editor: Editor) => void;
 };
 
-export function NoteEditor({ markdown, version, active, onChange, onReady }: Props) {
+export function NoteEditor({ markdown, version, active, ink, onChange, onReady }: Props) {
   const changeRef = useRef(onChange);
   changeRef.current = onChange;
   const readyRef = useRef(onReady);
@@ -35,6 +38,8 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
       Placeholder.configure({ placeholder: "Escribe… prueba # título, - lista, [] tarea, **negrita**, $ para una fórmula, o pega una imagen." }),
       NoteImage,
       MathNode,
+      Ink,
+      InkKeys,
     ],
     content: markdownToHtml(markdown),
     editorProps: {
@@ -78,9 +83,17 @@ export function NoteEditor({ markdown, version, active, onChange, onReady }: Pro
     }
   }, [editor, active]);
 
+  const docRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const doc = docRef.current;
+    const scroll = doc?.closest<HTMLElement>(".scroll");
+    if (!editor || !active || !ink || !doc || !scroll) return;
+    return startDrawing(editor, scroll, doc, ink);
+  }, [editor, active, ink]);
+
   if (!editor) return null;
   return (
-    <div className="doc" hidden={!active}>
+    <div className="doc" hidden={!active} ref={docRef}>
       <EditorContent editor={editor} />
       <BubbleMenu editor={editor} shouldShow={({ editor, state }) => !state.selection.empty && !editor.isActive("noteImage") && !editor.isActive("math")} className="bubble">
         <button onMouseDown={(e) => e.preventDefault()} onClick={() => (focusEditor(editor), editor.chain().toggleBold().run())}><b>B</b></button>

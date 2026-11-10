@@ -6,7 +6,10 @@ A quiet desktop notes app. Open it, start writing, and find the note again in yo
 
 - **Plain files.** Every note is a Markdown file in `~/Notes`. Other editors open them as usual.
 - **Writes like a word processor.** `# Title` turns into a heading as you type; lists, tasks, bold and code work the same way.
-- **Images without paths.** Paste a screenshot, then resize, align, rotate, crop or drag it. The file keeps a normal Markdown link, with the width stored the Obsidian way (`![|480](images/pasted-….png)`).
+- **Images without paths.** Paste a screenshot, then resize, align, rotate, crop or drag it. A centered image can grow past the text, up to the width of the window. The file keeps a normal Markdown link, with the width stored the Obsidian way (`![|480](images/pasted-….png)`).
+- **Draw on the page.** Press the pen button (or `Ctrl D`) to write, circle or underline anywhere on the note, images included, like in OneNote:
+  ink, red, blue, green, a highlighter and an eraser. `Esc` goes back to typing. Each drawing sticks to the line under it,
+  so it moves when you add text above. The file keeps it as an SVG next to the images (`![ink](images/ink-….svg)`), which other editors show as a picture.
 - **Math without LaTeX.** Type `$` (or `Ctrl M`) and write like on a calculator: `/` makes a fraction, `^` a power,
   `raiz`, `suma`, `xbar`, `phat`, `mu` and `sigma` become symbols, and `Alt R`, `Alt S`, `Alt B` insert a root, a sum and a bar.
   `Ctrl Enter` writes the result, the ⌨ button opens an on-screen keyboard with a statistics page, and `Ctrl P` exports to PDF.
@@ -18,6 +21,8 @@ A quiet desktop notes app. Open it, start writing, and find the note again in yo
 - **Sorts itself.** An optional classifier ([jev](https://typesafe.ai)) files each note under a category. Without an API key you pick the category yourself.
 
 ![A formula being typed calculator-style, with the statistics page of the on-screen keyboard](docs/screenshots/math.png)
+
+![Drawing on a note: a highlighted phrase, a red circle and a line over a pasted image](docs/screenshots/ink.png)
 
 ![The four new themes: Tokyo Night, Pergamino, Fósforo and Cianotipo](docs/screenshots/themes.jpg)
 

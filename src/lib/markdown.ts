@@ -43,12 +43,13 @@ function mathRule(state: StateInline, silent: boolean): boolean {
   return true;
 }
 
-// Images carry Obsidian-style options in the alt text: `![left|320](images/a.png)`.
+// Images carry Obsidian-style options in the alt text: `![left|320](images/a.png)`. `![ink](…)` is a drawing.
 md.renderer.rules.image = (tokens, idx) => {
   const token = tokens[idx];
-  const { align, width } = parseImageAlt(token.content);
   const src = String(token.attrGet("src") ?? "");
   const esc = md.utils.escapeHtml;
+  if (token.content === "ink") return `<img data-ink data-src="${esc(src)}">`;
+  const { align, width } = parseImageAlt(token.content);
   return `<img data-src="${esc(src)}" data-align="${align}"${width ? ` data-width="${width}"` : ""}>`;
 };
 
@@ -135,6 +136,8 @@ function block(n: JSONContent, indent: string): string | null {
       return indent + "---";
     case "noteImage":
       return indent + imageMarkdown(n.attrs ?? {});
+    case "ink":
+      return n.attrs?.src ? `${indent}![ink](${n.attrs.src})` : null;
     default:
       return n.content ? blocks(n.content, indent) : null;
   }

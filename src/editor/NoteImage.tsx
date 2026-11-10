@@ -1,5 +1,5 @@
 import { Node, NodeViewWrapper, ReactNodeViewRenderer, type NodeViewProps } from "@tiptap/react";
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { api, fileUrl } from "../lib/backend";
 import type { ImageAlign } from "../lib/markdown";
 import { Icon } from "../components/Icon";
@@ -52,6 +52,8 @@ export const NoteImage = Node.create({
 });
 
 const SIZES = { s: 240, m: 420, l: 640 } as const;
+/** Keep in sync with `--page-gutter` in styles.css. */
+const PAGE_GUTTER = 24;
 
 function ImageView({ node, updateAttributes, deleteNode, selected, editor }: NodeViewProps) {
   const { src, align, width } = node.attrs as { src: string; align: ImageAlign; width: number | null };
@@ -60,7 +62,12 @@ function ImageView({ node, updateAttributes, deleteNode, selected, editor }: Nod
   const [crop, setCrop] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const maxWidth = () => (editor.view.dom as HTMLElement).clientWidth;
+  const column = () => (editor.view.dom as HTMLElement).clientWidth;
+  // A centered image may grow past the text column, up to the window; text wraps only beside a narrower one.
+  const maxWidth = (a: ImageAlign = align) => {
+    const scroll = (editor.view.dom as HTMLElement).closest(".scroll")?.clientWidth ?? 0;
+    return a === "left" || a === "right" ? column() : Math.max(column(), scroll - 2 * PAGE_GUTTER);
+  };
   const shownWidth = liveWidth ?? (align === "full" ? null : width ?? 480);
 
   function startResize(e: ReactPointerEvent, dir: 1 | -1) {
@@ -152,9 +159,9 @@ function ImageView({ node, updateAttributes, deleteNode, selected, editor }: Nod
   }
 
   function setAlign(a: ImageAlign) {
-    const max = maxWidth();
+    const max = maxWidth(a);
     if (a === "full") return updateAttributes({ align: a });
-    const w = width && width < max ? width : a === "center" ? 480 : 320;
+    const w = width && width <= max ? width : a === "center" ? 480 : 320;
     updateAttributes({ align: a, width: w });
   }
 
@@ -165,7 +172,7 @@ function ImageView({ node, updateAttributes, deleteNode, selected, editor }: Nod
       ref={figure}
       className={`note-image ${selected ? "is-selected" : ""} ${cropping ? "is-cropping" : ""} ${busy ? "is-busy" : ""}`}
       data-align={align}
-      style={shownWidth ? { width: shownWidth } : undefined}
+      style={shownWidth ? ({ "--img-w": `${shownWidth}px` } as CSSProperties) : undefined}
     >
       <img src={fileUrl(absoluteImagePath(src))} alt="" draggable={false} data-drag-handle="" />
       {liveWidth !== null && <span className="note-image__badge">{liveWidth} px</span>}
@@ -192,7 +199,7 @@ function ImageView({ node, updateAttributes, deleteNode, selected, editor }: Nod
               <BarButton action="left" title="Izquierda, con texto al lado" on={align === "left"} onClick={() => setAlign("left")}><Icon name="alignLeft" /></BarButton>
               <BarButton action="center" title="Centro" on={align === "center"} onClick={() => setAlign("center")}><Icon name="alignCenter" /></BarButton>
               <BarButton action="right" title="Derecha, con texto al lado" on={align === "right"} onClick={() => setAlign("right")}><Icon name="alignRight" /></BarButton>
-              <BarButton action="full" title="Ancho completo" on={align === "full"} onClick={() => setAlign("full")}><Icon name="alignFull" /></BarButton>
+              <BarButton action="full" title="Ancho de la ventana" on={align === "full"} onClick={() => setAlign("full")}><Icon name="alignFull" /></BarButton>
               <span className="note-image__sep" />
               {(Object.keys(SIZES) as (keyof typeof SIZES)[]).map((k) => (
                 <BarButton key={k} action={k} title={`${SIZES[k]} px`} onClick={() => updateAttributes({ width: Math.min(SIZES[k], maxWidth()), align: align === "full" ? "center" : align })}>

@@ -1,9 +1,11 @@
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./components/Icon";
+import { InkBar } from "./components/InkBar";
 import { ThemePicker } from "./components/ThemePicker";
 import { NoteEditor, focusEditor, insertImage } from "./editor/NoteEditor";
 import { EditorBoundary } from "./editor/EditorBoundary";
+import type { InkTool } from "./editor/Ink";
 import { setImageRoot } from "./editor/NoteImage";
 import { api, onNewNote, onNotesChanged, printNote, type NoteInfo } from "./lib/backend";
 import { onNotify } from "./lib/notify";
@@ -36,6 +38,8 @@ export function App() {
   const [notesDir, setNotesDir] = useState("");
   const [now, setNow] = useState(Date.now());
   const [zoom, setZoom] = useState(savedZoom);
+  const [inkTool, setInkTool] = useState<InkTool | null>(null);
+  const lastPen = useRef<InkTool>("pen");
 
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
@@ -155,6 +159,9 @@ export function App() {
     refresh();
   };
 
+  const inkRef = useRef(inkTool);
+  inkRef.current = inkTool;
+
   const zoomRef = useRef(zoom);
   const zoomTo = useCallback((next: (z: number) => number) => {
     const z = next(zoomRef.current);
@@ -195,8 +202,15 @@ export function App() {
     };
   }, [refresh, newNote]);
 
+  const toggleInk = useCallback(() => setInkTool((t) => (t ? null : lastPen.current)), []);
+  const pickInk = (t: InkTool) => {
+    lastPen.current = t;
+    setInkTool(t);
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && inkRef.current) return setInkTool(null);
       if (!(e.ctrlKey || e.metaKey)) return;
       const key = e.key.toLowerCase();
       const handled = () => e.preventDefault();
@@ -208,6 +222,7 @@ export function App() {
       else if (key === "-") (handled(), zoomTo((z) => stepZoom(z, -1)));
       else if (key === "0") (handled(), zoomTo(() => 1));
       else if (key === "p") (handled(), printNote());
+      else if (key === "d") (handled(), toggleInk());
     };
     const onWheel = (e: WheelEvent) => {
       if (!(e.ctrlKey || e.metaKey) || !e.deltaY) return;
@@ -220,7 +235,7 @@ export function App() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("wheel", onWheel);
     };
-  }, [newNote, closeTab, zoomTo]);
+  }, [newNote, closeTab, zoomTo, toggleInk]);
 
   useEffect(() => onNotify(setToast), []);
 
@@ -303,6 +318,9 @@ export function App() {
           >
             ∑
           </button>
+          <button className={`ibtn ${inkTool ? "is-on" : ""}`} title="Dibujar y marcar sobre la hoja (Ctrl + D)" data-testid="toggle-ink" onClick={toggleInk}>
+            <Icon name="pen" />
+          </button>
           <button className="ibtn" title="Exportar a PDF (Ctrl + P)" data-testid="print-note" onClick={printNote}>
             <Icon name="printer" />
           </button>
@@ -324,13 +342,15 @@ export function App() {
           />
         </header>
 
-        <div className="scroll">
+        {inkTool && <InkBar tool={inkTool} onTool={pickInk} onDone={() => setInkTool(null)} />}
+        <div className={`scroll ${inkTool ? `is-inking is-inking--${inkTool === "eraser" ? "eraser" : "pen"}` : ""}`}>
           {tabs.map((t) => (
             <EditorBoundary key={t.id} active={t.id === activeId}>
               <NoteEditor
                 markdown={t.markdown}
                 version={t.version}
                 active={t.id === activeId}
+                ink={inkTool}
                 onChange={(md) => onChange(t.id, md)}
                 onReady={(ed) => editors.current.set(t.id, ed)}
               />
