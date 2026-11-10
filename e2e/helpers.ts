@@ -1,4 +1,5 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
+import type { Editor } from "@tiptap/core";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -25,6 +26,20 @@ export function read(dir: string, file: string): string {
 
 export function images(dir: string): string[] {
   return fs.readdirSync(path.join(dir, "images")).sort();
+}
+
+/**
+ * Clicks a line and moves the caret with Home or End. The browser moves it first and ProseMirror reads it
+ * on the next selectionchange, so a key sent right away would act on the old caret.
+ */
+export async function caretTo(page: Page, line: Locator, key: "Home" | "End") {
+  await line.click();
+  await page.keyboard.press(key);
+  await page.waitForFunction(() => {
+    const view = (document.querySelector(".doc:not([hidden]) .prose") as HTMLElement & { editor: Editor }).editor.view;
+    const sel = window.getSelection()!;
+    return view.posAtDOM(sel.anchorNode!, sel.anchorOffset) === view.state.selection.anchor;
+  });
 }
 
 export async function openFromSidebar(page: Page, title: string, opts: { newTab?: boolean } = {}) {

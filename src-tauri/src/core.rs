@@ -66,6 +66,10 @@ impl Notes {
             }
             "saveImage" => Ok(json!(self.save_image(&s("base64")?, &s("ext")?)?)),
             "readImage" => Ok(json!(self.read_image(&s("path")?)?)),
+            "writeInk" => {
+                self.write_ink(&s("path")?, &s("svg")?)?;
+                Ok(Value::Null)
+            }
             "mathFromText" => Ok(json!(crate::ai::math_from_text(&s("text")?)?)),
             _ => Err(format!("unknown command `{cmd}`")),
         }
@@ -154,6 +158,17 @@ impl Notes {
             return Err(format!("invalid image path `{path}`"));
         }
         fs::read(full).map(|b| STANDARD.encode(b)).map_err(err)
+    }
+
+    /// Overwrites a drawing. Unlike pasted images, a drawing keeps one file and changes with every stroke.
+    pub fn write_ink(&self, path: &str, svg: &str) -> Result<(), String> {
+        let name = path
+            .strip_prefix("images/")
+            .filter(|n| n.starts_with("ink-") && n.ends_with(".svg") && n.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.'))
+            .ok_or_else(|| format!("invalid drawing path `{path}`"))?;
+        let images = self.dir.join(IMAGES_DIR);
+        fs::create_dir_all(&images).map_err(err)?;
+        fs::write(images.join(name), svg).map_err(err)
     }
 
     fn info(&self, file: &str) -> Result<NoteInfo, String> {

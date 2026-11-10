@@ -28,6 +28,7 @@ export const api = {
   trash: (file: string) => call<null>("trash", { file }),
   saveImage: (base64: string, ext: string) => call<string>("saveImage", { base64, ext }),
   readImage: (path: string) => call<string>("readImage", { path }),
+  writeInk: (path: string, svg: string) => call<null>("writeInk", { path, svg }),
   mathFromText: (text: string) => call<string>("mathFromText", { text }),
 };
 
