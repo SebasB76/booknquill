@@ -3,6 +3,7 @@ import path from "node:path";
 
 const BRIDGE_PORT = 1431;
 const UI_PORT = 1430;
+const FAKE_ANTHROPIC_PORT = 1432;
 const cargo = path.join(process.env.HOME ?? "", ".cargo/bin/cargo");
 
 export default defineConfig({
@@ -21,10 +22,21 @@ export default defineConfig({
   },
   webServer: [
     {
+      command: "node e2e/fake-anthropic.mjs",
+      url: `http://127.0.0.1:${FAKE_ANTHROPIC_PORT}`,
+      env: { FAKE_ANTHROPIC_PORT: String(FAKE_ANTHROPIC_PORT) },
+      reuseExistingServer: false,
+    },
+    {
       // The real Rust core, served over HTTP. Each test resets it to a fresh copy of the fixtures.
       command: `${cargo} run --quiet --manifest-path src-tauri/Cargo.toml --features e2e-bridge --bin e2e_bridge`,
       url: `http://127.0.0.1:${BRIDGE_PORT}/health`,
-      env: { BNQ_FIXTURES: path.resolve("e2e/fixtures/notes"), BNQ_BRIDGE_PORT: String(BRIDGE_PORT) },
+      env: {
+        BNQ_FIXTURES: path.resolve("e2e/fixtures/notes"),
+        BNQ_BRIDGE_PORT: String(BRIDGE_PORT),
+        ANTHROPIC_BASE_URL: `http://127.0.0.1:${FAKE_ANTHROPIC_PORT}`,
+        ANTHROPIC_API_KEY: "e2e-key",
+      },
       timeout: 600_000,
       reuseExistingServer: false,
     },

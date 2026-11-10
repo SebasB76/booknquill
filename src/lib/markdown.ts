@@ -1,8 +1,47 @@
-import MarkdownIt from "markdown-it";
+import MarkdownIt, { type StateInline } from "markdown-it";
 import type { JSONContent } from "@tiptap/react";
 
 // `breaks` keeps single newlines as line breaks, which is how notes are written in Omawrite.
 const md = new MarkdownIt({ html: false, linkify: false, breaks: true });
+
+md.inline.ruler.after("escape", "math", mathRule);
+md.renderer.rules.math = (tokens, idx) => {
+  const t = tokens[idx];
+  return `<span data-math="${md.utils.escapeHtml(t.content)}"${t.meta?.display ? ' data-display="true"' : ""}></span>`;
+};
+
+/**
+ * `$x$` is inline math and `$$x$$` display math. Like Pandoc, a single `$` opens only before a non-space
+ * and closes only after one and before a non-digit, so "costó $5 y $10" stays text.
+ */
+function mathRule(state: StateInline, silent: boolean): boolean {
+  const { src, pos, posMax } = state;
+  if (src[pos] !== "$") return false;
+  const display = src[pos + 1] === "$";
+  const open = display ? 2 : 1;
+  const start = pos + open;
+  if (start >= posMax || (!display && /\s/.test(src[start]))) return false;
+  let end = start;
+  while (true) {
+    end = src.indexOf(display ? "$$" : "$", end);
+    if (end < 0 || end >= posMax) return false;
+    if (src[end - 1] === "\\") {
+      end += 1;
+      continue;
+    }
+    if (display || (!/\s/.test(src[end - 1]) && !/\d/.test(src[end + 1] ?? ""))) break;
+    end += 1;
+  }
+  const content = src.slice(start, end).trim();
+  if (!content) return false;
+  if (!silent) {
+    const token = state.push("math", "", 0);
+    token.content = content;
+    token.meta = { display };
+  }
+  state.pos = end + open;
+  return true;
+}
 
 // Images carry Obsidian-style options in the alt text: `![left|320](images/a.png)`.
 md.renderer.rules.image = (tokens, idx) => {
@@ -135,6 +174,7 @@ function inline(nodes: JSONContent[]): string {
   return nodes
     .map((n) => {
       if (n.type === "hardBreak") return "\n";
+      if (n.type === "math") return mathMarkdown(n.attrs ?? {});
       if (n.type !== "text") return "";
       let text = n.text ?? "";
       for (const mark of n.marks ?? []) {
@@ -145,6 +185,13 @@ function inline(nodes: JSONContent[]): string {
       return text;
     })
     .join("");
+}
+
+export function mathMarkdown(attrs: Record<string, unknown>): string {
+  // A formula still being typed is empty; `$$` would read back as the start of display math.
+  if (!String(attrs.latex ?? "").trim()) return "";
+  const fence = attrs.display ? "$$" : "$";
+  return fence + String(attrs.latex ?? "") + fence;
 }
 
 function prefixLines(text: string, prefix: string): string {

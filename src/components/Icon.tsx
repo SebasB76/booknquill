@@ -14,6 +14,7 @@ const PATHS = {
       <path d="m21 16-5-5-9 9" />
     </>
   ),
+  printer: <path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z" />,
   trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
   check: <path d="m5 12 5 5 9-10" />,
   palette: (

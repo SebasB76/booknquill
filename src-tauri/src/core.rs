@@ -66,6 +66,7 @@ impl Notes {
             }
             "saveImage" => Ok(json!(self.save_image(&s("base64")?, &s("ext")?)?)),
             "readImage" => Ok(json!(self.read_image(&s("path")?)?)),
+            "mathFromText" => Ok(json!(crate::ai::math_from_text(&s("text")?)?)),
             _ => Err(format!("unknown command `{cmd}`")),
         }
     }

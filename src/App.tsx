@@ -5,7 +5,8 @@ import { ThemePicker } from "./components/ThemePicker";
 import { NoteEditor, focusEditor, insertImage } from "./editor/NoteEditor";
 import { EditorBoundary } from "./editor/EditorBoundary";
 import { setImageRoot } from "./editor/NoteImage";
-import { api, onNewNote, onNotesChanged, type NoteInfo } from "./lib/backend";
+import { api, onNewNote, onNotesChanged, printNote, type NoteInfo } from "./lib/backend";
+import { onNotify } from "./lib/notify";
 import { titleOf, wordCount } from "./lib/markdown";
 import { applyZoom, savedZoom, stepZoom } from "./lib/zoom";
 
@@ -206,6 +207,7 @@ export function App() {
       else if (key === "=" || key === "+") (handled(), zoomTo((z) => stepZoom(z, 1)));
       else if (key === "-") (handled(), zoomTo((z) => stepZoom(z, -1)));
       else if (key === "0") (handled(), zoomTo(() => 1));
+      else if (key === "p") (handled(), printNote());
     };
     const onWheel = (e: WheelEvent) => {
       if (!(e.ctrlKey || e.metaKey) || !e.deltaY) return;
@@ -219,6 +221,8 @@ export function App() {
       window.removeEventListener("wheel", onWheel);
     };
   }, [newNote, closeTab, zoomTo]);
+
+  useEffect(() => onNotify(setToast), []);
 
   useEffect(() => {
     if (!toast) return;
@@ -287,6 +291,20 @@ export function App() {
           </nav>
           <button className="ibtn" title="Insertar imagen" data-testid="insert-image" onClick={() => fileInput.current?.click()}>
             <Icon name="image" />
+          </button>
+          <button
+            className="ibtn ibtn--text"
+            title="Insertar fórmula ($ o Ctrl + M)"
+            data-testid="insert-math"
+            onClick={() => {
+              const editor = editors.current.get(activeId);
+              if (editor) (focusEditor(editor), editor.commands.insertMath());
+            }}
+          >
+            ∑
+          </button>
+          <button className="ibtn" title="Exportar a PDF (Ctrl + P)" data-testid="print-note" onClick={printNote}>
+            <Icon name="printer" />
           </button>
           <button className="ibtn" title="Mover a la papelera" data-testid="trash-note" disabled={!active.file} onClick={trashActive}>
             <Icon name="trash" />

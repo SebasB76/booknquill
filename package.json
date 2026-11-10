@@ -10,20 +10,25 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@cortex-js/compute-engine": "^0.183.0",
     "@floating-ui/dom": "^1.8.0",
     "@tauri-apps/api": "^2.12.4",
+    "@tiptap/core": "3.32.2",
     "@tiptap/extension-list": "^3.32.2",
     "@tiptap/extensions": "^3.32.2",
     "@tiptap/pm": "^3.32.2",
     "@tiptap/react": "^3.32.2",
     "@tiptap/starter-kit": "^3.32.2",
+    "katex": "^0.19.1",
     "markdown-it": "^15.0.3",
+    "mathlive": "^0.111.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.3.3",
+    "@types/katex": "^0.16.8",
     "@types/markdown-it": "^14.2.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",

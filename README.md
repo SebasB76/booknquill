@@ -7,9 +7,17 @@ A quiet desktop notes app. Open it, start writing, and find the note again in yo
 - **Plain files.** Every note is a Markdown file in `~/Notes`. Other editors open them as usual.
 - **Writes like a word processor.** `# Title` turns into a heading as you type; lists, tasks, bold and code work the same way.
 - **Images without paths.** Paste a screenshot, then resize, align, rotate, crop or drag it. The file keeps a normal Markdown link, with the width stored the Obsidian way (`![|480](images/pasted-….png)`).
+- **Math without LaTeX.** Type `$` (or `Ctrl M`) and write like on a calculator: `/` makes a fraction, `^` a power,
+  `raiz`, `suma`, `xbar`, `phat`, `mu` and `sigma` become symbols, and `Alt R`, `Alt S`, `Alt B` insert a root, a sum and a bar.
+  `Ctrl Enter` writes the result, the ⌨ button opens an on-screen keyboard with a statistics page, and `Ctrl P` exports to PDF.
+  The file keeps standard `$…$` math, which Obsidian and GitHub render too.
+- **Words to formula.** Select "raiz de n sobre sigma" and press `Ctrl M`: Claude Haiku turns it into the formula.
+  It needs an Anthropic API key in `~/.config/booknquill/anthropic-api-key` (or `ANTHROPIC_API_KEY`).
 - **Five themes.** Negro, Tokyo Night, Pergamino (serif on paper), Fósforo (amber CRT) and Cianotipo (blueprint). Pick one from the palette button in the top bar.
 - **Zoom.** `Ctrl +` and `Ctrl -` (or `Ctrl` + mouse wheel) scale the whole window, `Ctrl 0` resets it. The level is remembered.
 - **Sorts itself.** An optional classifier ([jev](https://typesafe.ai)) files each note under a category. Without an API key you pick the category yourself.
+
+![A formula being typed calculator-style, with the statistics page of the on-screen keyboard](docs/screenshots/math.png)
 
 ![The four new themes: Tokyo Night, Pergamino, Fósforo and Cianotipo](docs/screenshots/themes.jpg)
 
